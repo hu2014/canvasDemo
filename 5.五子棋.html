@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五子棋</title>
+</head>
+<body>
+    <canvas id="demo" width="600" height="600"></canvas>
+    <script>
+      let canvas = document.getElementById('demo')
+      let ctx = canvas.getContext('2d')
+
+      //设置背景色
+      ctx.fillStyle = 'rgb(211, 173, 138)'
+      ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight)
+
+      //绘制竖线
+      for(let i = 0;i<15;i++){
+        ctx.beginPath()
+        ctx.moveTo(20+40*i,20)
+        ctx.lineTo(20+40*i,canvas.clientHeight - 20)
+        ctx.stroke()
+      }
+
+      //绘制横线
+      for(let i = 0;i<15;i++){
+        ctx.beginPath()
+        ctx.moveTo(20,20+40*i)
+        ctx.lineTo(canvas.clientWidth - 20,20+40*i)
+        ctx.stroke()
+      }
+
+      //执黑先行
+      let isBlack = true
+      //棋盘二维数组 [[[],[],[],[]],[],[],[]]
+      let cheeks = []
+      for(let i = 0;i <15;i++){
+        cheeks[i]= new Array(15).fill(0)
+      }
+
+      //点击事件
+      canvas.addEventListener('click',function(e){
+        let clientX = e.clientX
+        let clientY = e.clientY
+        let rec = canvas.getBoundingClientRect()
+        let ex = Math.round((clientX - rec.left - 20) / 40)   //第几根线
+        let ey =Math.round((clientY - rec.top - 20) / 40)   //第几根线
+        let cheekX = ex*40+20
+        let cheekY = ey*40+20
+        if(cheeks[ex][ey]) return
+        cheeks[ex][ey] = isBlack ? 1:2
+        ctx.beginPath()
+        ctx.arc(cheekX,cheekY,20,0,Math.PI*2)
+        ctx.fillStyle = isBlack ? 'black':'white'
+        ctx.fill()
+        ctx.closePath()
+        setTimeout(() => {
+          if(isWin(ex,ey)){
+              let msg =  window.confirm(`${isBlack ? '黑棋':'白棋'}赢了，是否继续？`)
+              if(msg){
+                console.log('继续游戏')
+              }else{
+                console.log('关闭游戏')
+              }
+          }
+          //切换选手
+          isBlack = !isBlack
+        }, 100);
+      })
+
+      //判断是否赢了
+      function isWin(ex,ey) {
+        let flag = isBlack ? 1:2
+        //上下查找
+        if(jugeUp_down(ex,ey,flag)){
+          return true
+        }
+        if(jugeLeft_right(ex,ey,flag)){
+          return true
+        }
+        if(jugeLeft_Up(ex,ey,flag)){
+          return true
+        }
+        if(jugeRight_Up(ex,ey,flag)){
+          return true
+        }
+        return false
+      }
+
+      //判断上下是否有五颗棋子了
+      function jugeUp_down(ex,ey,flag){
+        let num = 1
+        //向上寻找
+        for(let i = 1;i<5;i++){
+          let tmpEy = ey - i
+          if(tmpEy < 0) break
+          if(cheeks[ex][tmpEy] === flag) num++
+        }
+        //向下寻找
+        for(let i = 1;i<5;i++){
+          let tmpEy = ey + i
+          if(tmpEy > 14) break
+          if(cheeks[ex][tmpEy] === flag) num++
+        }
+        return num >= 5
+      }
+
+      //判断左右是否有五颗棋子了
+      function jugeLeft_right(ex,ey,flag) {
+        let num = 1
+        //向左寻找
+        for(let i = 1;i<5;i++){
+          let tmpX = ex - i
+          if(tmpX < 0 ) break
+          if(cheeks[tmpX][ey] === flag) num++
+        }
+        //向右寻找
+        for(let i = 1;i<5;i++){
+          let tmpX = ex + i
+          if(tmpX > 14 ) break
+          if(cheeks[tmpX][ey] === flag) num++
+        }
+        return num >= 5
+      }
+
+      //判断斜向防线 西北 东南
+      function jugeLeft_Up(ex,ey,flag) {
+        let num = 1
+        for(let i = 0;i<5;i++){
+          let tmpX = ex - i
+          let tempY = ey - i
+          if(tmpX < 0 || tempY < 0 ) break
+          if(cheeks[tmpX][tempY] === flag) num++
+        }
+        for(let i = 0;i<5;i++){
+          let tmpX = ex + i
+          let tempY = ey + i
+          if(tmpX > 14 || tempY > 14 ) break
+          if(cheeks[tmpX][tempY] === flag) num++
+        }
+        return num >=5
+      }
+
+      //判断斜向防线 东北 西南
+      function jugeRight_Up(ex,ey,flag) {
+        let num = 1
+        for(let i = 0;i<5;i++){
+          let tmpX = ex + i
+          let tempY = ey - i
+          if(tmpX > 14 || tempY < 0 ) break
+          if(cheeks[tmpX][tempY] === flag) num++
+        }
+        for(let i = 0;i<5;i++){
+          let tmpX = ex - i
+          let tempY = ey + i
+          if(tmpX < 0 || tempY > 14 ) break
+          if(cheeks[tmpX][tempY] === flag) num++
+        }
+        return num >=5
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>刮刮卡</title>
+</head>
+<body>
+  <div style="position: relative;width: 200px;">
+    <canvas id="can" width="300" height="200"></canvas>
+    <span style="position: absolute;top: 50%;left: 50%;white-space: nowrap;z-index: -1;" id="price"></span>
+    <button onclick="playAgain()">再来一次</button>
+  </div>
+    <script>
+      let isKeyDown = false //是否按下
+      /** @type {HTMLCanvasElement} */
+      let canvas = document.getElementById('can')
+      let ctx = canvas.getContext('2d')
+      let price = document.getElementById('price')
+      let options = [
+        '奖励五毛钱',
+        '奖励一脚踢飞',
+        '奖励一顿鸭脖套餐',
+        '奖励一个飞吻',
+        '奖励一杯奶茶',
+        '奖励搓澡服务一次',
+        '奖励按摩服务一次'
+      ]
+
+      //随机获取奖励
+      function getPrice() {
+        let idx =Math.round(Math.random()*7)
+        console.log(idx)
+        let curTile = options[idx]
+        price.innerHTML = curTile
+      }
+
+      function render() {
+        ctx.fillStyle = 'darkgray'
+        ctx.fillRect(0,0,300,200)
+        ctx.fillStyle = 'white'
+        ctx.font = '20px weiruan'
+        ctx.textAlign = 'center'
+        ctx.fillText('刮开有奖',150,100)
+        ctx.save()
+      }
+      getPrice()
+      render()
+      //在播一次
+      function playAgain() {
+        ctx.clearRect(0,0,300,200)
+        ctx.restore()
+        getPrice()
+        render()
+      }
+
+      canvas.addEventListener('mousedown',(e)=>{
+        isKeyDown = true
+      })
+
+      canvas.addEventListener('mousemove',(e)=>{
+        if(!isKeyDown) return
+        const x = e.pageX - canvas.offsetLeft
+        const y = e.pageY - canvas.offsetTop
+        ctx.globalCompositeOperation ="destination-out"
+        ctx.beginPath()
+        ctx.arc(x,y,10,0,2*Math.PI)
+        ctx.fill()
+      })
+
+      canvas.addEventListener('mouseup',(e)=>{
+        isKeyDown = false
+      })
+    </script>
+</body>
+</html>

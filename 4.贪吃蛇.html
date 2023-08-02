@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇</title>
+</head>
+<body>
+  <canvas id="can" width="400" height="400" style="background-color: black;"></canvas>
+  <script>
+    let canvas = document.getElementById('can')
+    let ctx = null
+    if(canvas.getContext){
+      ctx = canvas.getContext('2d')
+    }else{
+      alert('当前系统不支持canvas')
+    }
+    //定义初始虫子
+    let body = [
+      {x:3,y:6},
+      {x:4,y:6},
+      {x:5,y:6},
+    ]
+    //定义食物
+    let food = [10,10]
+    //定义方向 x,y
+    let direction = [1,0]
+    //定时器
+    let timer =  setInterval(() => {
+      render()
+    }, 180);
+    //渲染函数
+    function render(){
+      if(!check()){
+        alert('Game Over!!')
+        clearInterval(timer)
+        return
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let head = body[body.length - 1]
+      for(let i = 0;i<body.length -1;i++){
+        body[i].x = body[i+1].x
+        body[i].y = body[i+1].y
+      }
+      head.x += direction[0]
+      head.y += direction[1]
+      //渲染身体
+      for(let i = 0;i<body.length-1;i++){
+        draw(body[i].x * 20,body[i].y * 20,'orange')
+      }
+      //绘制头部
+      draw(head.x*20,head.y*20,'red')
+      //绘制食物
+      draw(food[0]*20,food[1]*20,'green')
+    }
+    //绘制函数
+    function draw (x,y,color){
+      ctx.fillStyle = color
+      ctx.fillRect(x,y,18,18)
+    }
+    //判断函数
+    function check(){
+      let head = body[body.length - 1]
+      //判断是否撞墙
+      if(head.x <= 0 || head.y <= 0 || head.x >= 19 || head.y >= 19){
+        return false
+      }
+      //判断是否撞到了自己
+      let bodyArr = body.slice(0,body.length-2)
+      let aa = bodyArr.some(item=>item.x === head.x && item.y === head.y)
+      if(aa) return false
+      //判断是否吃到了食物
+      if(food[0] === head.x && food[1] === head.y){
+        body.unshift({x:0,y:0})
+        food[0] = parseInt(Math.random()*20)
+        food[1] = parseInt(Math.random()*20)
+      }
+      return true
+    }
+    //事件监听
+    window.onkeydown = function (e) {
+        switch(e.keyCode){
+          case 37:
+            if(direction[0] !== 1){
+              direction = [-1,0]
+            }
+            break;
+          case 38:
+            if(direction[1] !== 1){
+              direction = [0,-1]
+            }
+            break;
+          case 39:
+            if(direction[0] !== -1){
+              direction = [1,0]
+            }
+            break;
+          case 40:
+            if(direction[1] !== -1){
+              direction = [0,1]
+            }
+            break;
+          default:
+            break;
+        }
+    }
+  </script>
+</body>
+</html>

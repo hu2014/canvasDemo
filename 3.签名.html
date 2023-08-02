@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>签名</title>
+</head>
+<body>
+    <canvas id="cans" width="600" height="600"></canvas>
+    <script>
+      let canvas = document.getElementById('cans')
+      let ctx = canvas.getContext('2d')
+      
+      let isPress = false;
+
+      ctx.fillStyle = 'black'
+      ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight)
+      
+
+      function getRealXY(e) {
+        let rec = canvas.getBoundingClientRect()
+        let ex = e.clientX - rec.left
+        let ey = e.clientY - rec.top
+        return {
+          x:ex,
+          y:ey
+        }
+      }
+
+
+      //按下鼠标
+      canvas.addEventListener('mousedown',(e)=>{
+        isPress = true
+        let ray = getRealXY(e)
+        ctx.strokeStyle = 'orange'
+        ctx.moveTo(ray.x,ray.y)
+      })
+
+      canvas.addEventListener('mousemove',(e)=>{
+          if(!isPress) return
+          let ray = getRealXY(e)
+          ctx.lineTo(ray.x,ray.y)
+          ctx.stroke()
+        })
+
+      canvas.addEventListener('mouseup',(e)=>{
+        isPress = false
+        let ray = getRealXY(e)
+      })
+    </script>
+</body>
+</html>

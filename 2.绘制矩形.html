@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>绘制矩形</title>
+  <style>
+    #canvas{
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="300" height="150"></canvas>
+  <div onclick="clearggg()">清除</div>
+  <script>
+    function clearggg() {
+       ctx.clearRect(0,0,300,150)
+    }
+     /** @type {HTMLCanvasElement} */
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+    //绘制第一个矩形
+    ctx.fillStyle = 'red'
+    ctx.fillRect(10,10,40,40)
+    ctx.strokeRect(30,30,60,60)
+
+  </script>
+</body>
+</html>
